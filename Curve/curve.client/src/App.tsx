@@ -51,15 +51,11 @@ function App() {
             }
             return 0;
         }
-        for (let i = minX; i < maxX; i++ ) {
+        for (let i = minX; i <= maxX; i += 0.1 ) {
             lineBuilder.push({ x: i, y: yBuilder(i) });
         }
         return lineBuilder;
     }
-    useEffect(()=>{
-        console.log(dataLine)
-    },[dataLine])
-
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -132,14 +128,15 @@ function App() {
                 <>
                     <p>{equation}</p>
                     <LineChart
-                        width={600}
-                        height={600}
+                        width={650}
+                        height={650}
                         >
                         <CartesianGrid strokeDasharray="1 1" />
-                        <XAxis dataKey="x" />
-                        <YAxis dataKey="y" />
-                        <Line type="monotone" dataKey="y" stroke="none" data={data} dot={true}/>
-                        <Line type="monotone" dataKey="y" stroke="#8884d8" data={dataLine} dot={false}/>
+                        <XAxis xAxisId="dots" dataKey="x" />
+                        <XAxis xAxisId="line" dataKey="x" hide={true} />
+                        <YAxis dataKey="y"/>
+                        <Line xAxisId="dots" type="monotone" dataKey="y" stroke="none" data={data} dot={true}/>
+                        <Line xAxisId="line" type="monotone" dataKey="y" stroke="#8884d8" data={dataLine} dot={false}/>
                     </LineChart>
                 </>)
             }
