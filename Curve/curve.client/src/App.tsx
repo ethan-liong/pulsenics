@@ -1,24 +1,18 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import './App.css';
 
-interface CurveFitRequest {
-    points: string;
-    type: string;
-  }
-  
-
 function App() {
     const [points, setPoints] = useState<string>('');
     const [curveType, setCurveType] = useState<string>('linear');
+    const [inputError, setInputError] = useState<boolean>(false);
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        const data: CurveFitRequest = {
-        points,
-        type: curveType
-        };
-
+        // parse points and ensure we have the correct amount
+        if (!/^(\d+,\d+;)+$/.test(points.replace(/\s+/g, ''))){
+            setInputError(true);
+            return;
+        }
         try {
             const response = await fetch(`https://localhost:5173/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
             if (!response.ok) {
@@ -35,6 +29,7 @@ function App() {
 
     const handlePointsChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPoints(e.target.value);
+        setInputError(false);
     };
 
     const handleCurveTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -49,7 +44,8 @@ function App() {
             type="text" 
             value={points} 
             onChange={handlePointsChange} 
-            required 
+            required
+            style={inputError ? { borderColor: 'red' } : undefined} 
             />
         </label>
         <label>

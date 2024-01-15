@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "7wHUjMWwBylQucswoW0MhDuj3jMIzmE/s7tu9GyJCJpDZYtKPyH9YvDP+Z92OhzlDwwjpDw5Xap9t7Cd3kfWXQ==",
+  "dgSpecHash": "epUtGqeZgvORCRT2KxHAohjisuyYfUjoETZAIoeIbVZp/cSDSi/aOjd5uvlmr0CQAzluPIxPhsJNtY7+4R7KJg==",
   "success": true,
   "projectFilePath": "B:\\Desktop\\pulsenics\\Curve\\Curve.Server\\Curve.Server.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Ethan\\.nuget\\packages\\mathnet.numerics\\5.0.0\\mathnet.numerics.5.0.0.nupkg.sha512",
     "C:\\Users\\Ethan\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\8.0.1\\microsoft.aspnetcore.spaproxy.8.0.1.nupkg.sha512",
     "C:\\Users\\Ethan\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\Ethan\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
