@@ -1,8 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { LineChart, XAxis, YAxis, CartesianGrid, Line } from 'recharts';
 import './App.css';
 
-import { LineChart, ScatterChart, Scatter, XAxis, 
-    YAxis, CartesianGrid, Line } from 'recharts';
 
 interface DataPoint {
     x: number;
@@ -34,21 +33,32 @@ function App() {
                 equationBuilder += coefficients[i - 1] > 0 ? "+" : "";
             }
         }
-        console.log(equationBuilder);
         return equationBuilder;
     }
 
-    const getRange = (point: DataPoint[]): number =>{
-        const xValues = point.map(item => item.x);
+    const dataLineBuilder = (result: number[], convertedPoints: DataPoint[])=>{
+        const xValues = convertedPoints.map(item => item.x);
         const minX = Math.min(...xValues);
         const maxX = Math.max(...xValues);
-
-        return maxX - minX;
+        const lineBuilder = [];
+        const yBuilder = (x: number) => {
+            if (curveType == "linear"){
+                return result[0] + result[1] * x;
+            } else if (curveType == "quadratic"){
+                return result[0] + result[1] * x + result[2] * Math.pow(x,2);
+            } else if (curveType == "cubic"){
+                return result[0] + result[1] * x + result[2] * Math.pow(x,2) + result[3] * Math.pow(x,3);
+            }
+            return 0;
+        }
+        for (let i = minX; i < maxX; i++ ) {
+            lineBuilder.push({ x: i, y: yBuilder(i) });
+        }
+        return lineBuilder;
     }
-
     useEffect(()=>{
-        console.log(data)
-    },[data])
+        console.log(dataLine)
+    },[dataLine])
 
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -58,15 +68,16 @@ function App() {
             setInputError(true);
             return;
         }
-        setData(convertToChartData(points));
+        const convertedPoints = convertToChartData(points);
+        setData(convertedPoints);
         try {
             const response = await fetch(`https://localhost:5173/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const result = JSON.parse(await response.text());
+            setDataLine(dataLineBuilder(result, convertedPoints));
             setEquation(`y = ${createEquationString(result)}`);
-
         }
         catch (error) {
         }
@@ -124,11 +135,11 @@ function App() {
                         width={600}
                         height={600}
                         >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid strokeDasharray="1 1" />
                         <XAxis dataKey="x" />
-                        <YAxis />
-                        <Line type="monotone" dataKey="y" stroke="#8884d8" data={data} dot={false}/>
+                        <YAxis dataKey="y" />
                         <Line type="monotone" dataKey="y" stroke="none" data={data} dot={true}/>
+                        <Line type="monotone" dataKey="y" stroke="#8884d8" data={dataLine} dot={false}/>
                     </LineChart>
                 </>)
             }
