@@ -59,6 +59,7 @@ function App() {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setEquation("loading...")
         // parse points and ensure we have the correct amount
         if (!/^(\d+,\d+;)+$/.test(points.replace(/\s+/g, ''))){
             setInputError(true);
