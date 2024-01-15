@@ -1,8 +1,8 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import './App.css';
 
-import { ScatterChart, Scatter, XAxis, 
-    YAxis, CartesianGrid } from 'recharts';
+import { LineChart, ScatterChart, Scatter, XAxis, 
+    YAxis, CartesianGrid, Line } from 'recharts';
 
 interface DataPoint {
     x: number;
@@ -13,6 +13,8 @@ function App() {
     const [curveType, setCurveType] = useState<string>('linear');
     const [inputError, setInputError] = useState<boolean>(false);
     const [data, setData] = useState<DataPoint[]>([]);
+    const [dataLine, setDataLine] = useState<DataPoint[]>([]);
+    const [equation, setEquation] = useState<string>('');
 
     const convertToChartData = (coordinateString: string): DataPoint[] => {
         return coordinateString.split(';') // Split into pairs
@@ -20,6 +22,34 @@ function App() {
             .map(([x, y]) => ({ x: parseFloat(x), y: parseFloat(y) })) // Convert to object
             .filter(point => !isNaN(point.x) && !isNaN(point.y)); // Filter out invalid pairs
     }
+
+    const createEquationString = (coefficients: number[]): string => {
+        let equationBuilder = "";
+        for (let i = coefficients.length - 1; i >= 0; i--){
+            if (coefficients[i] == 0) continue;
+            equationBuilder += coefficients[i];
+            // add the power if appropriate and add the correct sign
+            if (i >= 1) {
+                equationBuilder += i > 1 ? "x^" + i : "x";
+                equationBuilder += coefficients[i - 1] > 0 ? "+" : "";
+            }
+        }
+        console.log(equationBuilder);
+        return equationBuilder;
+    }
+
+    const getRange = (point: DataPoint[]): number =>{
+        const xValues = point.map(item => item.x);
+        const minX = Math.min(...xValues);
+        const maxX = Math.max(...xValues);
+
+        return maxX - minX;
+    }
+
+    useEffect(()=>{
+        console.log(data)
+    },[data])
+
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -34,12 +64,11 @@ function App() {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const result = await response.text();
-            console.log(result);
-            // Handle the response here. For example, show it in the UI.
-            } catch (error) {
-            console.error('There was an error sending the request', error);
-            // Handle error here
+            const result = JSON.parse(await response.text());
+            setEquation(`y = ${createEquationString(result)}`);
+
+        }
+        catch (error) {
         }
     };
 
@@ -50,10 +79,21 @@ function App() {
 
     const handleCurveTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setCurveType(e.target.value);
+        switch (e.target.value) {
+            case ("linear"):
+                setEquation("y = ax + b")
+                break;
+            case ("quadratic"):
+                setEquation("y = ax^2 + bx + c")
+                break;
+            case ("cubic"):
+                setEquation("y = ax^3 + bx^2 + cx + d")
+                break;
+        }
     };
-
+    
     return (
-        <>        
+        <>
             <form onSubmit={handleSubmit}>
             <label>
                 Enter Points (format: x1,y1; x2,y2; ...):
@@ -77,14 +117,21 @@ function App() {
             <br />
             <button type="submit">Calculate Curve</button>
             </form>
-
-            {data.length && (
-            <ScatterChart width={400} height={400}>
-                <CartesianGrid />
-                <XAxis type="number" dataKey="x" />
-                <YAxis type="number" dataKey="y" />
-                <Scatter data={data} fill="green" />
-            </ScatterChart>)}
+            {(data.length != 0) && (
+                <>
+                    <p>{equation}</p>
+                    <LineChart
+                        width={600}
+                        height={600}
+                        >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="x" />
+                        <YAxis />
+                        <Line type="monotone" dataKey="y" stroke="#8884d8" data={data} dot={false}/>
+                        <Line type="monotone" dataKey="y" stroke="none" data={data} dot={true}/>
+                    </LineChart>
+                </>)
+            }
         </>
 
     );

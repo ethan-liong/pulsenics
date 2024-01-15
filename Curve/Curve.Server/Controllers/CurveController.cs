@@ -26,8 +26,6 @@ namespace Curve.Server.Controllers
                 {
                     throw new FormatException("Invalid format for coordinate pair.");
                 }
-
-                // Parse x and y values and add them to respective arrays
                 x[i] = double.Parse(xy[0]);
                 y[i] = double.Parse(xy[1]);
             }
@@ -44,7 +42,7 @@ namespace Curve.Server.Controllers
                     val = 3;
                     break;
             }
-            return ($"[{String.Join(", ", Fit.Polynomial(x, y, val).Select(d => Math.Round(d, 2)).ToArray())}]");
+            return ($"[{String.Join(",", Fit.Polynomial(x, y, val).Select(d => Math.Round(d, 5)).ToArray())}]");
         }
     }
 }
