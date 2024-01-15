@@ -1,56 +1,76 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import './App.css';
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
+interface CurveFitRequest {
+    points: string;
+    type: string;
+  }
+  
 
 function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
+    const [points, setPoints] = useState<string>('');
+    const [curveType, setCurveType] = useState<string>('linear');
 
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tabelLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
+        const data: CurveFitRequest = {
+        points,
+        type: curveType
+        };
+
+        try {
+        const response = await fetch('https://localhost:5173/Curve', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        const result = await response.text();
+        console.log(result);
+        // Handle the response here. For example, show it in the UI.
+        } catch (error) {
+        console.error('There was an error sending the request', error);
+        // Handle error here
+        }
+    };
+
+    const handlePointsChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setPoints(e.target.value);
+    };
+
+    const handleCurveTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        setCurveType(e.target.value);
+    };
 
     return (
-        <div>
-            <h1 id="tabelLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
-        </div>
+        <form onSubmit={handleSubmit}>
+        <label>
+            Enter Points (format: x1,y1; x2,y2; ...):
+            <input 
+            type="text" 
+            value={points} 
+            onChange={handlePointsChange} 
+            required 
+            />
+        </label>
+        <label>
+            Select Curve Type:
+            <select value={curveType} onChange={handleCurveTypeChange}>
+            <option value="linear">Linear</option>
+            <option value="quadratic">Quadratic</option>
+            <option value="cubic">Cubic</option>
+            </select>
+        </label>
+        <button type="submit">Calculate Curve</button>
+        </form>
     );
-
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        const data = await response.json();
-        setForecasts(data);
-    }
 }
 
 export default App;

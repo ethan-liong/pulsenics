@@ -1,6 +1,6 @@
 @Curve.Server_HostAddress = http://localhost:5020
 
-GET {{Curve.Server_HostAddress}}/weatherforecast/
+POST {{Curve.Server_HostAddress}}/curve/
 Accept: application/json
 
 ###

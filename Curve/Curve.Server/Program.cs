@@ -7,7 +7,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+                      policy  =>
+                      {
+                          policy.AllowAnyOrigin() // Allow any origin
+                                 .AllowAnyMethod() // Allow any HTTP method
+                                 .AllowAnyHeader(); // Allow any header
+                      });
+});
+
+
 var app = builder.Build();
+app.UseCors(); 
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
