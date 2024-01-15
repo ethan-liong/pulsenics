@@ -20,24 +20,16 @@ function App() {
         };
 
         try {
-        const response = await fetch('https://localhost:5173/Curve', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
-        }
-
-        const result = await response.text();
-        console.log(result);
-        // Handle the response here. For example, show it in the UI.
-        } catch (error) {
-        console.error('There was an error sending the request', error);
-        // Handle error here
+            const response = await fetch(`https://localhost:5173/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.text();
+            console.log(result);
+            // Handle the response here. For example, show it in the UI.
+            } catch (error) {
+            console.error('There was an error sending the request', error);
+            // Handle error here
         }
     };
 

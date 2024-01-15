@@ -1,6 +1,0 @@
-@Pulsenics.Server_HostAddress = http://localhost:5024
-
-GET {{Pulsenics.Server_HostAddress}}/curve/
-Accept: application/json
-
-###
