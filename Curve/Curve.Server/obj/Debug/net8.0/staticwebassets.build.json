@@ -1,0 +1,23 @@
+{
+  "Version": 1,
+  "Hash": "sfk43jDsDjqVtN/0Gq2yC5+JpSYvn5wowZzC6/aj5F0=",
+  "Source": "Curve.Server",
+  "BasePath": "_content/Curve.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "B:\\Desktop\\pulsenics\\Curve\\curve.client\\curve.client.esproj",
+      "Version": 2,
+      "Source": "curve.client",
+      "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

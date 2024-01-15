@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34408.163
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Curve.Server", "Curve.Server\Curve.Server.csproj", "{2AECD97E-5CAC-4A3B-A021-4587E35AA371}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "curve.client", "curve.client\curve.client.esproj", "{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2AECD97E-5CAC-4A3B-A021-4587E35AA371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AECD97E-5CAC-4A3B-A021-4587E35AA371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AECD97E-5CAC-4A3B-A021-4587E35AA371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AECD97E-5CAC-4A3B-A021-4587E35AA371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B3E1BF9-5125-43BD-8513-002C2ACE6C9C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {440B836D-903C-48FE-B4F7-2481F5F34683}
+	EndGlobalSection
+EndGlobal
