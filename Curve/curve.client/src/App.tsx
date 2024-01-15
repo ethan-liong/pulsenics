@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { LineChart, XAxis, YAxis, CartesianGrid, Line } from 'recharts';
 import './App.css';
 
@@ -15,6 +15,7 @@ function App() {
     const [dataLine, setDataLine] = useState<DataPoint[]>([]);
     const [equation, setEquation] = useState<string>('');
 
+    // converts form of x1,y1;x2,y2;...xn,yn; to [{x:x1_val, y:y1_val}, {x:x2_val, y:y2_val}]
     const convertToChartData = (coordinateString: string): DataPoint[] => {
         return coordinateString.split(';') // Split into pairs
             .map(pair => pair.split(',')) // Split each pair into [x, y]
@@ -22,6 +23,7 @@ function App() {
             .filter(point => !isNaN(point.x) && !isNaN(point.y)); // Filter out invalid pairs
     }
 
+    // generates string form of equation from retrun results. [1,2,3] => 3x^2 + 2x + 1
     const createEquationString = (coefficients: number[]): string => {
         let equationBuilder = "";
         for (let i = coefficients.length - 1; i >= 0; i--){
@@ -36,6 +38,11 @@ function App() {
         return equationBuilder;
     }
 
+    /* builds points to draw a line.
+     number: array. [1, 2, 3] from the return call and uses it for the euqation
+     convertedPoints: array. [{x:x1_val, y:y1_val}, {x:x2_val, y:y2_val}] to find the min 
+     and max values to detemrine how far to draw the curve
+     */
     const dataLineBuilder = (result: number[], convertedPoints: DataPoint[])=>{
         const xValues = convertedPoints.map(item => item.x);
         const minX = Math.min(...xValues);
@@ -61,11 +68,30 @@ function App() {
         e.preventDefault();
         setEquation("loading...")
         // parse points and ensure we have the correct amount
-        if (!/^(\d+,\d+;)+$/.test(points.replace(/\s+/g, ''))){
+        if (!/^((-\d+,\d+|-\d+,\d+;|\d+,\d+;)+)$/.test(points.replace(/\s+/g, ''))) {
             setInputError(true);
             return;
         }
         const convertedPoints = convertToChartData(points);
+        // ensure we have enough points for a fit curve
+        if (convertedPoints.length <= 1 && curveType === 'linear') {
+            alert('We need at least 2 points of data for this fit.');
+            setInputError(true);
+            return;
+        } else if (convertedPoints.length <= 2 && curveType === 'quadratic') {
+            alert('We need at least 3 points of data for this fit.');
+            setInputError(true);
+            return;
+        } else if (convertedPoints.length <= 3 && curveType === 'cubic') {
+            alert('We need at least 4 points of data for this fit.');
+            setInputError(true);
+            return;
+        }
+        if (new Set(convertedPoints.map(point => point.x)).size != convertedPoints.length) {
+            alert('Multiple of the same x values.');
+            setInputError(true);
+            return;
+        }
         setData(convertedPoints);
         try {
             const response = await fetch(`https://localhost:5173/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
@@ -77,6 +103,7 @@ function App() {
             setEquation(`y = ${createEquationString(result)}`);
         }
         catch (error) {
+            throw new Error(`Error when fetching curve: ${error}`);
         }
     };
 
@@ -87,6 +114,7 @@ function App() {
 
     const handleCurveTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setCurveType(e.target.value);
+        setInputError(false);
         switch (e.target.value) {
             case ("linear"):
                 setEquation("y = ax + b")

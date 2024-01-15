@@ -8,7 +8,11 @@ namespace Curve.Server.Controllers
     [Route("[controller]")]
     public class CurveController : ControllerBase
     {
-
+        /*
+         * takes in request of /curve?points={points};&type={curveType}
+        points is in the form of x1,y1;x2,y2;...xn,yn;
+        curveType is linear, quadratic or cubic
+        */
         [HttpGet(Name = "GetCurve")]
         public string Get(string points, string type)
         {
