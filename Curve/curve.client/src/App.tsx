@@ -15,12 +15,13 @@ function App() {
     const [dataLine, setDataLine] = useState<DataPoint[]>([]);
     const [equation, setEquation] = useState<string>('');
 
-    // converts form of x1,y1;x2,y2;...xn,yn; to [{x:x1_val, y:y1_val}, {x:x2_val, y:y2_val}]
+    // converts form of x1,y1;x2,y2;...xn,yn; to [{x:x1_val, y:y1_val}, {x:x2_val, y:y2_val}] and sorts them by x order
     const convertToChartData = (coordinateString: string): DataPoint[] => {
         return coordinateString.split(';') // Split into pairs
             .map(pair => pair.split(',')) // Split each pair into [x, y]
             .map(([x, y]) => ({ x: parseFloat(x), y: parseFloat(y) })) // Convert to object
-            .filter(point => !isNaN(point.x) && !isNaN(point.y)); // Filter out invalid pairs
+            .filter(point => !isNaN(point.x) && !isNaN(point.y)) // Filter out invalid pairs
+            .sort((a, b) => a.x - b.x);
     }
 
     // generates string form of equation from retrun results. [1,2,3] => 3x^2 + 2x + 1
@@ -58,7 +59,7 @@ function App() {
             }
             return 0;
         }
-        for (let i = minX; i <= maxX; i += 0.1 ) {
+        for (let i = minX; i <= maxX + 0.1; i += 0.1 ) {
             lineBuilder.push({ x: i, y: yBuilder(i) });
         }
         return lineBuilder;
@@ -67,8 +68,8 @@ function App() {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setEquation("loading...")
-        // parse points and ensure we have the correct amount
-        if (!/^((-\d+,\d+|-\d+,\d+;|\d+,\d+;)+)$/.test(points.replace(/\s+/g, ''))) {
+        // parse points and ensure we have the correct amount (check for negative, commas, negative and decimal)
+        if (!/^(?:-?\d+(\.\d+)?,-?\d+(\.\d+)?;)+$/.test(points.replace(/\s+/g, ''))) {
             setInputError(true);
             return;
         }
@@ -95,15 +96,16 @@ function App() {
         setData(convertedPoints);
         try {
             const response = await fetch(`https://localhost:5173/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+            if (!response.ok || response.status != 200) {
+                setEquation(`Error: ${await response.text()}`);
+                return
             }
             const result = JSON.parse(await response.text());
             setDataLine(dataLineBuilder(result, convertedPoints));
             setEquation(`y = ${createEquationString(result)}`);
         }
         catch (error) {
-            throw new Error(`Error when fetching curve: ${error}`);
+            setEquation(`Error when fetching curve: ${error}`);
         }
     };
 
@@ -132,7 +134,7 @@ function App() {
         <>
             <form onSubmit={handleSubmit}>
             <label>
-                Enter Points (format: x1,y1; x2,y2; ...):
+                Enter Points (format: x1,y1; x2,y2; ... xn,yn;):
                 <input 
                 type="text" 
                 value={points} 
@@ -160,8 +162,8 @@ function App() {
                         width={650}
                         height={650}
                         >
-                        <CartesianGrid strokeDasharray="1 1" />
-                        <XAxis xAxisId="dots" dataKey="x" />
+                        <CartesianGrid />
+                        <XAxis xAxisId="dots" dataKey="x" tickCount={data.length} />
                         <XAxis xAxisId="line" dataKey="x" hide={true} />
                         <YAxis dataKey="y"/>
                         <Line xAxisId="dots" type="monotone" dataKey="y" stroke="none" data={data} dot={true}/>

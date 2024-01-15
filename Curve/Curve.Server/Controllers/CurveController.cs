@@ -14,7 +14,7 @@ namespace Curve.Server.Controllers
         curveType is linear, quadratic or cubic
         */
         [HttpGet(Name = "GetCurve")]
-        public string Get(string points, string type)
+        public IActionResult Get(string points, string type)
         {
             // assign 2 arrays
             var pairs = points.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -46,7 +46,16 @@ namespace Curve.Server.Controllers
                     val = 3;
                     break;
             }
-            return ($"[{String.Join(",", Fit.Polynomial(x, y, val).Select(d => Math.Round(d, 5)).ToArray())}]");
+            if (val == 0)
+            {
+                return BadRequest("Invalid type");
+            }
+            try {
+                return Ok($"[{String.Join(",", Fit.Polynomial(x, y, val).Select(d => Math.Round(d, 5)).ToArray())}]");
+            }catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }
