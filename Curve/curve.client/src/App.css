@@ -17,3 +17,8 @@ th, td {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+
+br {
+    display: block;
+    margin: 7px 0;
+ }
