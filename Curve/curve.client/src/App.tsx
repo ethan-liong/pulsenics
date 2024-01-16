@@ -67,7 +67,6 @@ function App() {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setEquation("loading...")
         // parse points and ensure we have the correct amount (check for negative, commas, negative and decimal)
         if (!/^(?:-?\d+(\.\d+)?,-?\d+(\.\d+)?;)+$/.test(points.replace(/\s+/g, ''))) {
             setInputError(true);
@@ -93,9 +92,10 @@ function App() {
             setInputError(true);
             return;
         }
+        setEquation("loading...")
         setData(convertedPoints);
         try {
-            const response = await fetch(`https://localhost:5173/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
+            const response = await fetch(`/curve?points=${encodeURIComponent(points)}&type=${encodeURIComponent(curveType)}`);
             if (!response.ok || response.status != 200) {
                 setEquation(`Error: ${await response.text()}`);
                 return
@@ -166,7 +166,7 @@ function App() {
                         <XAxis xAxisId="dots" dataKey="x" tickCount={data.length} />
                         <XAxis xAxisId="line" dataKey="x" hide={true} />
                         <YAxis dataKey="y"/>
-                        <Line xAxisId="dots" type="monotone" dataKey="y" stroke="none" data={data} dot={true}/>
+                        <Line xAxisId="dots" type="monotone" dataKey="y" stroke="none" data={data} dot={{ fill: 'red' }} />
                         <Line xAxisId="line" type="monotone" dataKey="y" stroke="#8884d8" data={dataLine} dot={false}/>
                     </LineChart>
                 </>)
